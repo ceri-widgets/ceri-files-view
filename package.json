@@ -1,0 +1,60 @@
+{
+  "name": "ceri-files-view",
+  "description": "A simple, themed files view",
+  "version": "0.0.0",
+  "homepage": "https://github.com/ceri-widgets",
+  "author": {
+    "name": "Paul Pflugradt",
+    "email": "paul.pflugradt@gmail.com"
+  },
+  "license": "MIT",
+  "main": "files-view.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ceri-widgets/ceri-files-view"
+  },
+  "files": [
+    "*.js",
+    "*.scss"
+  ],
+  "engines": {
+    "node": "*"
+  },
+  "dependencies": {
+    "ceri": "^1.0.21",
+    "ceri-icon": "^0.1.0",
+    "ceri-tooltip": "^0.1.0",
+    "ceri-fab": "^0.1.0",
+    "ceri-progress": "^0.0.1"
+  },
+  "devDependencies": {
+    "ceri-compiler": "^1.1.1",
+    "ceri-dev-server": "^1.0.7",
+    "ceri-materialize": "^1.0.1",
+    "coffee-loader": "^0.7.3",
+    "coffee-script": "^1.12.6",
+    "gh-pages": "^1.0.0",
+    "materialize-css": "^0.99.0",
+    "node-sass": "^4.5.3",
+    "sass-loader": "^6.0.6",
+    "script-runner": "^0.1.7"
+  },
+  "keywords": [
+    "files-view",
+    "component",
+    "ceri"
+  ],
+  "readmeFilename": "README.md",
+  "scripts": {
+    "build:coffee": "coffee -c -o . src/*.coffee",
+    "build:bundle": "ceri-compiler materialize.js files-view-component.js",
+    "build": "run-npm build:*",
+    "dev": "ceri-dev-server",
+    "watch": "ceri-dev-server --test --watch",
+    "test": "ceri-dev-server --test",
+    "preversion": "npm test",
+    "version": "npm run build && git add .",
+    "postversion": "git push && git push --tags && npm publish",
+    "ghpages": "ceri-dev-server --static static/ && gh-pages -d static"
+  }
+}
