@@ -2,6 +2,7 @@ module.exports =
   mixins: [
     require("ceri-fab")(require("ceri-fab/materialize"))
     require("ceri-progress/mixin")(require("ceri-progress/materialize"))
+    require("ceri-toaster/mixin")(require("ceri-toaster/materialize"))
   ]
   data: ->
     icon:

@@ -47,6 +47,10 @@ filesView.delete = (file) -> new Promise (resolve,reject) =>
 ```scss
 // and this additional requirement
 @import "~ceri-files-view/materialize";
+@import "~ceri-tooltip/materialize";
+@import "~ceri-fab/materialize";
+@import "~ceri-progress/materialize";
+@import "~ceri-toaster/materialize";
 ```
 - setup webpack for [ceri-icon](https://github.com/ceri-comps/ceri-icon). Include `ma-file_upload`, `ma-delete_forever` and `ma-mode_edit` icons.
 

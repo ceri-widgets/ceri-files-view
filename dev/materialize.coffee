@@ -25,7 +25,7 @@ module.exports = createView
         lastModified: 1000000000000
       }
     ]
-    @fv.rename = @fv.upload = @fv.delete = -> new Promise (resolve,reject) -> setTimeout resolve, 2000
+    @fv.rename = @fv.upload = @fv.delete = -> new Promise (resolve,reject) -> setTimeout reject, 2000
   tests: (el) ->
     describe "files-view", ->
       after ->

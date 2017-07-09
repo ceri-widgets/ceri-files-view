@@ -111,6 +111,7 @@ module.exports =
       upload: "Upload"
       delete: "Delete"
       rename: "Rename"
+      failed: "failed"
       drop: "Drop files here"
     icon:
       upload: null
@@ -150,9 +151,10 @@ module.exports =
           preserve: "width"
         @rename newName, file
         .then close
-        .catch ->
+        .catch =>
           restore()
           close()
+          @$toast text: @text.rename + " " + @text.failed + ": " + oldName
 
     deleteSelected: ->
       len = (selected = Object.keys(@selected)).length
@@ -171,7 +173,9 @@ module.exports =
             @$watch.notify "files"
           delete @selected[name]
           @$watch.notify "selected"
-        .catch close
+        .catch =>
+          close()
+          @$toast text: @text.delete + " " + @text.failed + ": " + name
 
     handleFiles: (files) ->
       localFiles = []
@@ -202,6 +206,7 @@ module.exports =
           if index > -1
             @files.splice index,1
           @$watch.notify "files"
+          @$toast text: @text.upload + " " + @text.failed + ": " + file.name
         
     
     onUpload: (e) -> @handleFiles(e.target?.files)
