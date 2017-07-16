@@ -1,7 +1,7 @@
 {
   "name": "ceri-files-view",
   "description": "A simple, themed files view",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "homepage": "https://github.com/ceri-widgets",
   "author": {
     "name": "Paul Pflugradt",
