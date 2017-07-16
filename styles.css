@@ -2244,18 +2244,13 @@ ceri-files-view {
   border: 1px dashed #ccc;
   border-radius: 6px;
   background-color: #FAFAFA;
-  padding: 20px;
+  padding: 10px 20px;
   margin: 20px;
+  min-height: 200px;
   height: calc(100%-40px);
   overflow: auto;
   position: relative;
   display: flex; }
-  ceri-files-view.fullsize {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0; }
   ceri-files-view:before {
     content: attr(droptext) " ";
     position: absolute;
@@ -2266,6 +2261,22 @@ ceri-files-view {
     top: 45%;
     opacity: .25;
     filter: alpha(opacity=25); }
+  ceri-files-view .fab {
+    position: absolute;
+    display: flex;
+    flex-direction: column-reverse;
+    bottom: 24px;
+    right: 24px; }
+  ceri-files-view.fullsize {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0; }
+    ceri-files-view.fullsize .fab {
+      position: fixed;
+      bottom: 44px;
+      right: 44px; }
   ceri-files-view table > thead {
     user-select: none; }
     ceri-files-view table > thead .triangle {
@@ -2279,22 +2290,33 @@ ceri-files-view {
     cursor: pointer; }
     ceri-files-view table > tbody tr td {
       user-select: none; }
-      ceri-files-view table > tbody tr td.filename span {
-        min-width: 200px;
-        padding-left: 4px;
-        display: inline-block; }
-      ceri-files-view table > tbody tr td.filename input {
-        min-width: 200px;
-        width: 100%;
-        padding-left: 4px;
-        margin: 0;
-        height: inherit;
-        border: none;
-        border-bottom: none;
-        box-sizing: inherit; }
-        ceri-files-view table > tbody tr td.filename input:hover, ceri-files-view table > tbody tr td.filename input:focus {
-          border-bottom: none !important;
-          box-shadow: none !important; }
+      ceri-files-view table > tbody tr td.filename {
+        width: 45%; }
+        ceri-files-view table > tbody tr td.filename span {
+          padding: 1px 5px;
+          display: inline-block; }
+        ceri-files-view table > tbody tr td.filename input {
+          padding: 1px 4px;
+          margin: 0;
+          width: initial;
+          height: inherit;
+          border: 1px solid;
+          background: white;
+          box-sizing: inherit; }
+          ceri-files-view table > tbody tr td.filename input:hover, ceri-files-view table > tbody tr td.filename input:focus {
+            border-bottom: 1px solid !important;
+            box-shadow: none !important; }
+      @media only screen and (max-width: 600px) {
+        ceri-files-view table > tbody tr td.modified, ceri-files-view table > tbody tr td.size {
+          font-size: 0.7em; } }
+  @media only screen and (max-width: 600px) {
+    ceri-files-view table.renameState .modified,
+    ceri-files-view table.renameState .size {
+      display: none; }
+    ceri-files-view table.renameState .filename {
+      width: 100%; }
+      ceri-files-view table.renameState .filename input {
+        width: 100%; } }
 
 ceri-tooltip.materialize {
   padding: 6px 8px;
