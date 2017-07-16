@@ -21,22 +21,21 @@
     "node": "*"
   },
   "dependencies": {
-    "ceri": "^1.0.23",
-    "ceri-icon": "^0.1.0"
+    "ceri": "^1.0.24",
+    "ceri-icon": "^0.1.1"
   },
   "peerDependencies": {
     "ceri-fab": "^0.1.1",
-    "ceri-icon": "^0.1.0",
+    "ceri-icon": "^0.1.1",
     "ceri-progress": "^0.1.0",
     "ceri-toaster": "^0.1.1",
     "ceri-tooltip": "^0.1.0"
   },
   "devDependencies": {
     "ceri-compiler": "^1.1.2",
-    "ceri-dev-server": "^1.0.8",
+    "ceri-dev-server": "^1.0.9",
     "ceri-materialize": "^1.0.1",
     "ceri-fab": "^0.1.1",
-    "ceri-icon": "^0.1.0",
     "ceri-progress": "^0.1.0",
     "ceri-toaster": "^0.1.1",
     "ceri-tooltip": "^0.1.0",
