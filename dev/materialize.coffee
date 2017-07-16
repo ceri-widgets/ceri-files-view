@@ -25,9 +25,9 @@ module.exports = createView
         lastModified: 1000000000000
       }
     ]
-    @fv.rename = @fv.upload = @fv.delete = -> new Promise (resolve,reject) -> setTimeout reject, 2000
-  tests: (el) ->
-    describe "files-view", ->
-      after ->
-        el.remove()
-      it "should work", ->
+    @fv.rename = @fv.upload = @fv.delete = -> new Promise (resolve,reject) -> setTimeout resolve, 2000
+    @fv.download = (file) -> @$toast text: "download triggered: " + file.name
+
+  tests: "files-view": ->
+    it "should work", =>
+      should.exist @

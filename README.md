@@ -8,7 +8,7 @@ A simple, themed files view
 # Install
 
 ```sh
-npm install --save-dev ceri-files-view
+npm install --save-dev ceri-files-view ceri-tooltip ceri-fab ceri-progress ceri-toaster
 ```
 ## Usage
 
@@ -38,6 +38,7 @@ filesView.upload = (file, setProgress) -> new Promise (resolve, reject) =>
   setProgress(50) # to set progress bar to 50%
 filesView.delete = (file) -> new Promise (resolve,reject) =>
   # somehow delete file server-side
+filesView.download = (file) -> # somehow trigger file download
 ```
 
 
@@ -45,6 +46,10 @@ filesView.delete = (file) -> new Promise (resolve,reject) =>
 #### Materialize
 - setup [ceri-materialize](https://github.com/ceri-comps/ceri-materialize) and load the scss.
 ```scss
+// red color is needed for deletion button
+@import "~ceri-materialize/color";
+@include do("include-color","red", "base");
+@import "~ceri-materialize/colorProcessor";
 // and this additional requirement
 @import "~ceri-files-view/materialize";
 @import "~ceri-tooltip/materialize";
@@ -52,7 +57,8 @@ filesView.delete = (file) -> new Promise (resolve,reject) =>
 @import "~ceri-progress/materialize";
 @import "~ceri-toaster/materialize";
 ```
-- setup webpack for [ceri-icon](https://github.com/ceri-comps/ceri-icon). Include `ma-file_upload`, `ma-delete_forever` and `ma-mode_edit` icons.
+- setup webpack for [ceri-icon](https://github.com/ceri-comps/ceri-icon). Include the following icons:
+[`ma-file_upload`,`ma-delete_forever`,`ma-mode_edit`]
 
 - load theme file
 ```coffee

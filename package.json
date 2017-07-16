@@ -21,17 +21,25 @@
     "node": "*"
   },
   "dependencies": {
-    "ceri": "^1.0.21",
-    "ceri-fab": "^0.1.0",
+    "ceri": "^1.0.23",
+    "ceri-icon": "^0.1.0"
+  },
+  "peerDependencies": {
+    "ceri-fab": "^0.1.1",
     "ceri-icon": "^0.1.0",
-    "ceri-progress": "^0.0.1",
-    "ceri-toaster": "^0.1.0",
+    "ceri-progress": "^0.1.0",
+    "ceri-toaster": "^0.1.1",
     "ceri-tooltip": "^0.1.0"
   },
   "devDependencies": {
-    "ceri-compiler": "^1.1.1",
-    "ceri-dev-server": "^1.0.7",
+    "ceri-compiler": "^1.1.2",
+    "ceri-dev-server": "^1.0.8",
     "ceri-materialize": "^1.0.1",
+    "ceri-fab": "^0.1.1",
+    "ceri-icon": "^0.1.0",
+    "ceri-progress": "^0.1.0",
+    "ceri-toaster": "^0.1.1",
+    "ceri-tooltip": "^0.1.0",
     "coffee-loader": "^0.7.3",
     "coffee-script": "^1.12.6",
     "gh-pages": "^1.0.0",

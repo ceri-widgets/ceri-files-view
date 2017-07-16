@@ -15,43 +15,101 @@ module.exports =
     require "ceri/lib/props"
     require "ceri/lib/util"
     require "ceri/lib/sort"
+    require "ceri/lib/@tap"
+    require "ceri/lib/states"
   ]
   structure: template 1, """
-    <table #ref=table :class=classes.table>
+    <table #ref=table>
       <thead>
         <tr>
-          <th @click=sortBy("name")>
+          <th @click=sortBy("name") class=filename >
             <span :text=text.name></span>
             <span :class=classes.triangle :text="sortFilesSymbol.name"></span>
           </th>
-          <th @click=sortBy("lastModified")>
+          <th @click=sortBy("lastModified") class=modified >
             <span :text=text.modified></span>
             <span :class=classes.triangle :text="sortFilesSymbol.lastModified"></span>
           </th>
-          <th @click=sortBy("size")>
+          <th @click=sortBy("size") class=size>
             <span :text=text.size></span>
             <span :class=classes.triangle :text="sortFilesSymbol.size"></span>
           </th>
         </tr>
       </thead>
       <tbody #ref=tbody>
-        <c-for names="file,i" id=name iterate=sortedFiles tap=scopes template=_listTemplate />
+        <c-for 
+          names="file,i"
+          id=name
+          iterate=sortedFiles
+          tap=scopes 
+          computed=_listComputed
+          >
+          <template>
+            <tr 
+              :class.expr="@isSelected?'active':''" 
+              @click.inside=select
+              #ref=row
+              >
+              <@dblclick=leech(file) active.expr="@isSelected && !@isRenaming" />
+              <@tap=leech(file) active.expr="@isSelected && !@isRenaming" not-prevented=true />
+              <td 
+                class=filename 
+                style="position:relative" 
+                #ref=namecell
+                >
+                
+                <span :text=file.name #show.not="isRenaming">
+                  <@click=rename-click(@) active="ui.canRename" />
+                  <@tap=rename-click(@) active="ui.canRename" prevent=true />
+                </span>
+                <input $value=file.name #show="isRenaming" #ref=input
+                  $file=file
+                  @click.prevent
+                  @keyup=keyupRename
+                  @focus=focusRename
+                  @blur=blurRename
+                ></input>
+              </td>
+              <td class=modified :text.expr=@getDateString(@file)></td>
+              <td class=size :text.expr=@getSizeString(@file)></td>
+            </tr>
+          </template>
+        </c-for>
       </tbody>
     </table>
-    <c-fab style="display:flex; flex-direction: column-reverse; position: absolute; right: 24px; bottom: 24px" @mousedown.prevent=noop @click=onFab></c-fab>
+    <c-fab></c-fab>
   """
+  computedClass:
+    table: ->
+      obj = {}
+      obj[@classes.table] = true if @classes.table?
+      obj[@ui._state+"State"] = true
+      return obj
+
+  states:
+    ui:
+      initial: ["select"]
+      select: ["select","selectMultiple","rename","delete","download"]
+      selectMultiple: ["select","selectMultiple","delete"]
+      rename: 
+        next: ["select"]
+        can: -> @ui.select or @ui.delete?.length == 1
+        cbs: "renameSelected"
+      delete: ["select","deleteConfirm"]
+      deleteConfirm: 
+        next: []
+        cbs: "deleteSelected"
+      download: []
+      upload: 
+        next: ["select"]
+        can: -> true
   fab:
-    rename:
-      if: -> @selectedLength == 1
-      child: null
-      onClick: "renameSelected"
-    delete:
-      if: -> @selectedLength > 0
-      child: null
-      onClick: "deleteSelected"
-    upload:
-      child: template 1, """<input type="file" style="position:absolute;top:0;left:0;bottom:0;right:0;opacity:0" @change="onUpload" multiple></input>"""
-      onClick: null
+    ui:
+      rename: {}
+      delete: {}
+      deleteConfirm: {}
+      upload:
+        child: template 1, """<input type="file" style="position:absolute;top:0;left:0;bottom:0;right:0;opacity:0" @change="onUpload" multiple></input>"""
 
   events:
     dragover:
@@ -64,16 +122,13 @@ module.exports =
         cbs: (e) -> @handleFiles(e.dataTransfer.files)
     click:
       this:
-        notPrevented: true
-        cbs: (e) -> 
-          unless e.onFab
-            @selected = {}
+        self: true
+        cbs: "ui('initial')"
+          
   sort:
     files: ["name",1]
   computed:
-    selectedLength:
-      noWait: true
-      get: -> Object.keys(@selected).length
+    selected: -> @ui.select or @ui.selectMultiple or @ui.delete or @ui.rename or @ui.deleteSelected
     droptext:
       get: ->
         if @files.length == 0
@@ -83,24 +138,14 @@ module.exports =
       cbs: (text) -> @$setAttribute("droptext",text)
 
   data: ->
-    _lastSelected: null
-    _listTemplate: template 1, """
-      <tr @mousedown.not-prevented=select :class.expr="@selected[@file.name]?'active':''" @click.not-prevented.prevent=noop #ref=row>
-        <td class=filename style="position:relative" #ref=namecell>
-          <span :text=file.name #show.expr="!@selected[@file.name]"></span>
-          <input $value=file.name #show.expr="@selected[@file.name]" #ref=input
-            $file=file
-            @click.prevent=noop
-            @keyup=keyupRename
-            @focus=focusRename
-            @blur=blurRename
-          ></input>
-        </td>
-        <td class=modified :text.expr=@getDateString(@file)></td>
-        <td class=size :text.expr=@getSizeString(@file)></td>
-      </tr>
-    """
-    selected: {}
+    _listComputed:
+      isSelected: ->
+        if a = @selected
+          return ~a.indexOf(@)
+        return false
+      isRenaming: -> @ui.rename?[0] == @
+
+    download: null
     files: []
     preprocess: {}
     display: {}
@@ -110,6 +155,7 @@ module.exports =
       size: "Size"
       upload: "Upload"
       delete: "Delete"
+      deleteConfirm: "Confirm delete"
       rename: "Rename"
       failed: "failed"
       drop: "Drop files here"
@@ -126,11 +172,16 @@ module.exports =
       renameButton: null
 
   methods:
-    noop: (e) ->
-    onFab: (e) ->
-      e.onFab = true
-    renameSelected: -> @_lastSelected?.input.focus()
-        
+    setSelect: (arr) ->
+      arr = arr.reduce ((acc, val) -> acc.push(val) if val?; return acc), []
+      type = switch arr.length
+        when 0 then "initial"
+        when 1 then "select"
+        else "selectMultiple"
+      @ui(type, arr)
+    leech: (file,e) -> @download? file
+    renameClick: (scope) -> @ui("rename",[scope])
+    renameSelected: (scope) -> scope[0].input.focus() if scope
     focusRename: -> @input.setSelectionRange(0, @file.name.length)
     keyupRename: (e) ->
       return if e.type == "keyup" and e.keyCode != 13
@@ -149,35 +200,40 @@ module.exports =
           onTimeout: restore
           init: width: cell.parentElement.offsetWidth+"px"
           preserve: "width"
-        @rename newName, file
-        .then close
+        @rename newName, oldName
+        .then =>
+          @ui "initial"
+          close()
         .catch =>
           restore()
           close()
           @$toast text: @text.rename + " " + @text.failed + ": " + oldName
+      else
+        @ui "initial"
 
-    deleteSelected: ->
-      len = (selected = Object.keys(@selected)).length
-      selected.forEach (name) =>
-        scope = @selected[name]
-        close = @$progress
-          el: scope.namecell
-          init: width: scope.row.offsetWidth+"px"
-          preserve: "width"
-        @delete (file = scope.file)
-        .then =>
-          close()
-          index = @files.indexOf(file)
-          if index > -1
-            @files.splice index,1
-            @$watch.notify "files"
-          delete @selected[name]
-          @$watch.notify "selected"
-        .catch =>
-          close()
-          @$toast text: @text.delete + " " + @text.failed + ": " + name
+    deleteSelected: (scope) ->
+      if scope
+        Promise.all(scope.map (scope) =>
+          close = @$progress
+            el: scope.namecell
+            init: width: scope.row.offsetWidth+"px"
+            preserve: "width"
+          @delete (file = scope.file)
+          .then =>
+            close()
+            index = @files.indexOf(file)
+            if index > -1
+              @files.splice index,1
+              @$watch.notify "files"
+            return null
+          .catch =>
+            close()
+            @$toast text: @text.delete + " " + @text.failed + ": " + name
+            return scope
+        ).then @setSelect.bind(@)
 
     handleFiles: (files) ->
+      @ui("initial")
       localFiles = []
       for file in files
         unless @isExisting(file.name)
@@ -191,23 +247,25 @@ module.exports =
       @$watch.notify "files"
       for file in localFiles
         file.scope = @getScopeByFile(file)
-      finished = 0
-      localFiles.forEach (file) =>
+      Promise.all localFiles.map (file) =>
         scope = file.scope
         close = @$progress
           el: scope.namecell
           init: width: scope.row.offsetWidth+"px"
           preserve: "width"
-        @upload file.file, close
-        .then close
-        .catch =>
-          close() 
-          index = @files.indexOf(file)
-          if index > -1
-            @files.splice index,1
-          @$watch.notify "files"
-          @$toast text: @text.upload + " " + @text.failed + ": " + file.name
-        
+        return @upload file.file, close
+          .then => 
+            close()
+            return file.scope
+          .catch =>
+            close() 
+            index = @files.indexOf(file)
+            if index > -1
+              @files.splice index,1
+            @$watch.notify "files"
+            @$toast text: @text.upload + " " + @text.failed + ": " + file.name
+            return null
+      .then @setSelect.bind(@)
     
     onUpload: (e) -> @handleFiles(e.target?.files)
     fillZero: (str) ->
@@ -237,51 +295,31 @@ module.exports =
         break unless Math.abs(bytes) >= thresh && u < units.length - 1
       return bytes.toFixed(1)+' '+units[u]
     select: (e) ->
-      toggle = (scope, last) =>
-        if last
-          if @selected[scope.file.name]
-            @selected = {}
-            @_lastSelected = null 
+      if @ui.canSelectMultiple
+        if e.shiftKey
+          arr = @selected
+          if arr[0]
+            start = @scopes.indexOf(arr[0])
+            end = @scopes.indexOf(@)
+            if start > end
+              tmp = @scopes.slice(end,start+1).reverse()
+            else
+              tmp = @scopes.slice(start,end+1)
+            return @setSelect tmp
+        if e.ctrlKey
+          arr = @ui.select or @ui.selectMultiple
+          if ~(i = arr.indexOf(@))
+            arr.splice(i,1)
           else
-            tmp = {}
-            tmp[scope.file.name] = scope
-            @selected = tmp
-            @_lastSelected = scope
-        else 
-          if @selected[scope.file.name]
-            delete @selected[scope.file.name]
-          else
-            @selected[scope.file.name] = scope
-          @$watch.notify "selected"
-      if e and e.type == "mousedown"
-        if e.shiftKey and @_lastSelected
-          if @_lastSelected == @file
-            return toggle(@,true)
-          start = @getScopeIndexByFile(@_lastSelected.file)
-          end = @getScopeIndexByFile(@file)
-          if start > end
-            tmp = @scopes.slice(end,start)
-          else
-            tmp = @scopes.slice(start+1,end+1)
-          for file in tmp
-            toggle(file,false)
-          return e.preventDefault()
-        else if e.ctrlKey
-          toggle(@, false)
-          return e.preventDefault()
-      unless e.target.nodeName == "INPUT"
-        toggle(@, true)
-
+            arr.push @
+          return @setSelect arr
+      return @setSelect [@] if @ui.canSelect and (not @ui.rename or @ui.rename[0] != @)
+        
     getScopeByFile: (file) ->
       for scope,i in @scopes
         if scope.file == file
           return scope
       return null
-    getScopeIndexByFile: (file) ->
-      for scope,i in @scopes
-        if scope.file == file
-          return i
-      return -1
     isExisting: (name) ->
       for scope,i in @scopes
         if scope.file.name == name

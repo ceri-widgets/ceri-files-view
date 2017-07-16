@@ -8,8 +8,9 @@ module.exports =
     icon:
       upload: "ma-file_upload"
       delete: "ma-delete_forever"
+      deleteConfirm: "ma-delete_forever"
       rename: "ma-mode_edit"
     classes:
-      deleteButton: "red"
+      deleteConfirmButton: "red"
       table: "highlight"
       triangle: "triangle"
