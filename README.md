@@ -8,7 +8,7 @@ A simple, themed files view
 # Install
 
 ```sh
-npm install --save-dev ceri-files-view ceri-tooltip ceri-fab ceri-progress ceri-toaster
+npm install --save-dev ceri-files-view ceri-tooltip ceri-fab ceri-progress ceri-toaster ceri-icon
 ```
 ## Usage
 

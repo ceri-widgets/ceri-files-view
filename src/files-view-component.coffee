@@ -1,6 +1,5 @@
 
 module.exports =
-
   mixins: [
     require "ceri/lib/structure"
     require "ceri/lib/computed"
@@ -10,10 +9,8 @@ module.exports =
     require "ceri/lib/#model"
     require "ceri/lib/#show"
     require "ceri/lib/c-for"
-    require "ceri/lib/c-mount"
     require "ceri/lib/setAttribute"
     require "ceri/lib/props"
-    require "ceri/lib/util"
     require "ceri/lib/sort"
     require "ceri/lib/@tap"
     require "ceri/lib/states"
@@ -128,7 +125,6 @@ module.exports =
   sort:
     files: ["name",1]
   computed:
-    selected: -> @ui.select or @ui.selectMultiple or @ui.delete or @ui.rename or @ui.deleteSelected
     droptext:
       get: ->
         if @files.length == 0
@@ -139,10 +135,7 @@ module.exports =
 
   data: ->
     _listComputed:
-      isSelected: ->
-        if a = @selected
-          return ~a.indexOf(@)
-        return false
+      isSelected: -> (tmp = @ui._value).indexOf? and ~tmp.indexOf(@)
       isRenaming: -> @ui.rename?[0] == @
 
     download: null
@@ -297,7 +290,7 @@ module.exports =
     select: (e) ->
       if @ui.canSelectMultiple
         if e.shiftKey
-          arr = @selected
+          arr = @ui._value
           if arr[0]
             start = @scopes.indexOf(arr[0])
             end = @scopes.indexOf(@)
