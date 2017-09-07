@@ -1,4 +1,4 @@
-require "./materialize.config.scss"
+require "./materialize.config.styl"
 require("../src/files-view.coffee")(require("../src/materialize.coffee"))
 
 createView = require "ceri-dev-server/lib/createView"

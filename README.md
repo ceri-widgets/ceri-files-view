@@ -44,19 +44,7 @@ filesView.download = (file) -> # somehow trigger file download
 
 ## Themes
 #### Materialize
-- setup [ceri-materialize](https://github.com/ceri-comps/ceri-materialize) and load the scss.
-```scss
-// red color is needed for deletion button
-@import "~ceri-materialize/color";
-@include do("include-color","red", "base");
-@import "~ceri-materialize/colorProcessor";
-// and this additional requirement
-@import "~ceri-files-view/materialize";
-@import "~ceri-tooltip/materialize";
-@import "~ceri-fab/materialize";
-@import "~ceri-progress/materialize";
-@import "~ceri-toaster/materialize";
-```
+- setup [ceri-materialize](https://github.com/ceri-comps/ceri-materialize)
 - setup webpack for [ceri-icon](https://github.com/ceri-comps/ceri-icon). Include the following icons:
 [`ma-file_upload`,`ma-delete_forever`,`ma-mode_edit`]
 
@@ -74,7 +62,9 @@ npm install
 npm run dev
 ```
 Browse to `http://localhost:8080/`.
-
+## Notable changes
+#### 0.2.0
+- use ceri-materialize@2
 ## License
 Copyright (c) 2017 Paul Pflugradt
 Licensed under the MIT license.
